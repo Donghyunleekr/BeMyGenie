@@ -47,19 +47,21 @@ app.get('/about', (req,res) => {res.sendFile(__dirname+'/intro.html')})
 // })
 app.get('/list',async   (req,res) => {
     let result = await db.collection('post').find().toArray()
-    console.log(result)
     res.render('list.ejs', { post : result})
 })
 
 app.get('/detail/:id', async (req,res)=>{
     // console.log(req.params)
     let result = await db.collection('post').findOne({_id : new ObjectId(req.params.id)})
-    console.log(result)
     res.render('detail.ejs', {result : result})
 })
 
-app.get('/time',async   (req,res) => {
-    // let result = await db.collection('post').find().toArray()
-    // console.log(result)
-    res.render('time.ejs', { time : new Date()})
+app.get('/edit/:id', async(req,res) => {
+    let result = await db.collection('post').findOne({_id : new ObjectId(req.params.id)})
+    res.render('edit.ejs', {result : result})
+})
+
+app.post('/edit', async(req,res) => {
+    await db.collection('post').updateOne({_id: new ObjectId(req.body.id)},{$set:{title: req.body.title, content: req.body.content}})
+    res.redirect('/list')
 })
